@@ -94,6 +94,7 @@ SERVICE_HANDLERS = {
     'volumio': ('media_player', 'volumio'),
     'lg_smart_device': ('media_player', 'lg_soundbar'),
     'nanoleaf_aurora': ('light', 'nanoleaf_aurora'),
+    'hp_printer': ('sensor', 'hp_printer'),
 }
 
 OPTIONAL_SERVICE_HANDLERS = {
