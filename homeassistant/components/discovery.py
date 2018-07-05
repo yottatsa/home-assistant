@@ -59,6 +59,7 @@ CONFIG_ENTRY_HANDLERS = {
     SERVICE_IKEA_TRADFRI: 'tradfri',
     'sonos': 'sonos',
     SERVICE_IGD: 'upnp',
+    'dlink_camera': 'nipca',
 }
 
 SERVICE_HANDLERS = {
