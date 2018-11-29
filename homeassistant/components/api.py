@@ -191,11 +191,12 @@ class APIStatesView(HomeAssistantView):
     @ha.callback
     def get(self, request):
         """Get current states."""
-        user = request['hass_user']
-        entity_perm = user.permissions.check_entity
+        user = request.get('hass_user')
+        if user:
+            entity_perm = user.permissions.check_entity
         states = [
             state for state in request.app['hass'].states.async_all()
-            if entity_perm(state.entity_id, 'read')
+            if not user or entity_perm(state.entity_id, 'read')
         ]
         return self.json(states)
 
