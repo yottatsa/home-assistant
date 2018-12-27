@@ -170,10 +170,6 @@ class Proximity(Entity):
             self.schedule_update_ha_state()
             return
 
-        # We can't check proximity because latitude and longitude don't exist.
-        if 'latitude' not in new_state.attributes:
-            return
-
         # Collect distances to the zone for all devices.
         distances_to_zone = {}
         for device in self.proximity_devices:
@@ -213,6 +209,10 @@ class Proximity(Entity):
             device_state = self.hass.states.get(closest_device)
             self.nearest = device_state.name
             self.schedule_update_ha_state()
+            return
+
+        # We can't check proximity because latitude and longitude don't exist.
+        if 'latitude' not in new_state.attributes:
             return
 
         # Stop if we cannot calculate the direction of travel (i.e. we don't
