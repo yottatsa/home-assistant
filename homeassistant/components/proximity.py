@@ -175,6 +175,9 @@ class Proximity(Entity):
         for device in self.proximity_devices:
             # Ignore devices in an ignored zone.
             device_state = self.hass.states.get(device)
+            if not device_state:
+                continue
+
             if device_state.state in self.ignored_zones:
                 continue
 
