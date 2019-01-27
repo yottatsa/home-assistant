@@ -12,6 +12,7 @@ from functools import reduce
 import voluptuous as vol
 
 import homeassistant.helpers.config_validation as cv
+from homeassistant.util.async_ import run_coroutine_threadsafe
 from homeassistant.helpers import discovery
 from homeassistant.components.media_player import DOMAIN as MEDIA_PLAYER
 from homeassistant.components.switch import DOMAIN as SWITCH
@@ -22,6 +23,7 @@ from homeassistant.const import (EVENT_HOMEASSISTANT_START,
                                  STATE_PAUSED, CONF_HOST)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity_component import EntityComponent
 
 REQUIREMENTS = ['pyCEC==0.4.13']
 
@@ -160,6 +162,8 @@ def setup(hass: HomeAssistant, base_config):
     from pycec.cec import CecAdapter
     from pycec.tcp import TcpAdapter
 
+    component = EntityComponent(_LOGGER, 'switch', hass)
+
     # Parse configuration into a dict of device name to physical address
     # represented as a list of four elements.
     device_aliases = {}
@@ -294,6 +298,17 @@ def setup(hass: HomeAssistant, base_config):
             hass, ent_platform, DOMAIN, discovered={ATTR_NEW: [key]},
             hass_config=base_config)
 
+    def _removed_device(device):
+        """Handle a device removal."""
+        key = '{}.{}'.format(DOMAIN, device.name)
+        _LOGGER.info("Device %s removed", key)
+#        if key in hass.data:
+#            del hass.data[key]
+#        ent_platform = base_config[DOMAIN][CONF_TYPES].get(key, platform)
+#        entity_name = '{}.{}'.format(ent_platform, device.name)
+#        _LOGGER.info('Removing %s', entity_name)
+#        hass.add_job(component.async_remove_entity(entity_name))
+
     def _shutdown(call):
         hdmi_network.stop()
 
@@ -310,6 +325,7 @@ def setup(hass: HomeAssistant, base_config):
         hass.services.register(DOMAIN, SERVICE_SELECT_DEVICE, _select_device)
 
         hdmi_network.set_new_device_callback(_new_device)
+        hdmi_network.set_device_removed_callback(_removed_device)
         hdmi_network.start()
 
     hass.bus.listen_once(EVENT_HOMEASSISTANT_START, _start_cec)
